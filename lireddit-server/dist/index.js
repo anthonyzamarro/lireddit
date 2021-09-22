@@ -17,7 +17,7 @@ const core_1 = require("@mikro-orm/core");
 const constants_1 = require("./constants");
 const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
 const express_1 = __importDefault(require("express"));
-var cors = require('cors');
+const cors_1 = __importDefault(require("cors"));
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const hello_1 = require("./resolvers/hello");
@@ -32,8 +32,12 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = express_1.default();
     const RedisStore = connect_redis_1.default(express_session_1.default);
     const redisClient = redis_1.default.createClient();
+    app.use(cors_1.default({
+        origin: 'http://localhost:3000',
+        credentials: true
+    }));
     app.use(express_session_1.default({
-        name: 'qid',
+        name: constants_1.COOKIE_NAME,
         store: new RedisStore({
             client: redisClient,
             disableTouch: true
@@ -56,7 +60,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         context: ({ res, req }) => ({ em: orm.em, req, res })
     });
     yield apolloServer.start();
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.get('/', (_, res) => {
         res.send("hello");
     });

@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
-import { __prod__ } from './constants';
+import { COOKIE_NAME, __prod__ } from './constants';
 // import { Post } from './entities/post';
 import microConfig  from './mikro-orm.config';
 import express from 'express';
-var cors = require('cors');
+import cors from 'cors';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { HelloResolver } from './resolvers/hello';
@@ -13,13 +13,14 @@ import { UserResolver } from './resolvers/user';
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import { MyContext } from './types';
+// import { User } from './entities/User';
 
 
 
 
 const main = async () => {
     const orm = await MikroORM.init(microConfig);
+    // await orm.em.nativeDelete(User, {});
     await orm.getMigrator().up();
 
     const app = express();
@@ -27,9 +28,14 @@ const main = async () => {
     const RedisStore = connectRedis(session);
     const redisClient = redis.createClient();
 
+    app.use(cors({
+        origin: 'http://localhost:3000',
+        credentials: true
+    }));
+
     app.use(
         session({
-            name: 'qid',
+            name: COOKIE_NAME,
             store: new RedisStore({
                 client: redisClient, 
                 disableTouch: true
@@ -52,20 +58,12 @@ const main = async () => {
             resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false
         }),
-        context: ({res, req}): MyContext => ({ em: orm.em, req, res })
+        context: ({res, req}) => ({ em: orm.em, req, res })
     });
 
     await apolloServer.start();
 
-    apolloServer.applyMiddleware({ app });
-
-    // var corsOptions = {
-    //     origin: 'https://$studio.apollographql.com',
-    //     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204,
-    //     credentials: true,
-    //   }
-    
-    // app.options('*', cors(corsOptions));
+    apolloServer.applyMiddleware({ app, cors: false });
 
     app.get('/', (_, res) => {
         res.send("hello");
