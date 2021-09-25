@@ -23,7 +23,7 @@ const type_graphql_1 = require("type-graphql");
 const hello_1 = require("./resolvers/hello");
 const post_1 = require("./resolvers/post");
 const user_1 = require("./resolvers/user");
-const redis_1 = __importDefault(require("redis"));
+const ioredis_1 = __importDefault(require("ioredis"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_redis_1 = __importDefault(require("connect-redis"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,15 +31,16 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield orm.getMigrator().up();
     const app = express_1.default();
     const RedisStore = connect_redis_1.default(express_session_1.default);
-    const redisClient = redis_1.default.createClient();
+    const redis = new ioredis_1.default();
+    const origins = ['https://studio.apollographql.com', 'http://localhost:3000'];
     app.use(cors_1.default({
-        origin: 'http://localhost:3000',
+        origin: origins,
         credentials: true
     }));
     app.use(express_session_1.default({
         name: constants_1.COOKIE_NAME,
         store: new RedisStore({
-            client: redisClient,
+            client: redis,
             disableTouch: true
         }),
         cookie: {
@@ -57,7 +58,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [hello_1.HelloResolver, post_1.PostResolver, user_1.UserResolver],
             validate: false
         }),
-        context: ({ res, req }) => ({ em: orm.em, req, res })
+        context: ({ res, req }) => ({ em: orm.em, req, res, redis })
     });
     yield apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });

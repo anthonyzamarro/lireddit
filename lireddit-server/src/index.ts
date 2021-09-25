@@ -28,8 +28,9 @@ const main = async () => {
     const RedisStore = connectRedis(session);
     const redis = new Redis();
 
+    const origins = ['https://studio.apollographql.com', 'http://localhost:3000']
     app.use(cors({
-        origin: 'http://localhost:3000',
+        origin: origins,
         credentials: true
     }));
 

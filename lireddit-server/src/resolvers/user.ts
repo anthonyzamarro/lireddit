@@ -6,7 +6,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validateRegister } from "../utils/validateRegister";
-import { sendEmail } from "src/utils/sendEmail";
+import { sendEmail } from "../utils/sendEmail";
 import { v4 } from 'uuid';
 
 @ObjectType()
