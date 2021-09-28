@@ -14,7 +14,7 @@ import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 // import { User } from './entities/User';
-
+import { createConnection } from 'typeorm';
 
 
 
