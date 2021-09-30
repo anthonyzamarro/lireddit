@@ -125,10 +125,13 @@ export class UserResolver {
         }
 
         const hashedPassword = await argon2.hash(options.password);
-        // const user = em.create(User, {username: options.username, password: hashedPassword});
         let user;
         try {
-            const result = await getConnection().createQueryBuilder().insert().into(User).values(
+            const result = await getConnection()
+                .createQueryBuilder()
+                .insert()
+                .into(User)
+                .values(
                 {
                     username: options.username, 
                     email: options.email,
@@ -137,9 +140,9 @@ export class UserResolver {
             ).returning('*')
             .execute();
             console.log(result);
-            user = result.raw;
+            user = result.raw[0];
         } catch(err) {
-            console.log('error', err);
+            console.log('error!:', err);
             // err.detail.includes("already exists")
             // duplicate username error
             if (err.code === "23505") {
@@ -153,7 +156,7 @@ export class UserResolver {
             console.log('message: ', err.message);
         }
 
-        //store user id session
+        // store user id session
         // this will set a cookie on the user
         // keep them logged in
         req.session.userId = user.id;

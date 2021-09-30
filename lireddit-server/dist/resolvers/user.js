@@ -128,17 +128,21 @@ let UserResolver = class UserResolver {
             const hashedPassword = yield argon2_1.default.hash(options.password);
             let user;
             try {
-                const result = yield typeorm_1.getConnection().createQueryBuilder().insert().into(User_1.User).values({
+                const result = yield typeorm_1.getConnection()
+                    .createQueryBuilder()
+                    .insert()
+                    .into(User_1.User)
+                    .values({
                     username: options.username,
                     email: options.email,
                     password: hashedPassword,
                 }).returning('*')
                     .execute();
                 console.log(result);
-                user = result.raw;
+                user = result.raw[0];
             }
             catch (err) {
-                console.log('error', err);
+                console.log('error!:', err);
                 if (err.code === "23505") {
                     return {
                         errors: [{

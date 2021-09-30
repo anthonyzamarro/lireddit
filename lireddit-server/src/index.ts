@@ -13,8 +13,8 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 // import { User } from './entities/User';
 import { createConnection } from 'typeorm';
-import { User } from './entities/user';
-import { Post } from './entities/post';
+import { User } from './entities/User';
+import { Post } from './entities/Post';
 
 
 

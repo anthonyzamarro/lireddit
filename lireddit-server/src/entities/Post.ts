@@ -6,7 +6,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, U
 export class Post extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn()
-    id!: number;
+  id!: number;
 
   @Field(() => String)
   @CreateDateColumn()
