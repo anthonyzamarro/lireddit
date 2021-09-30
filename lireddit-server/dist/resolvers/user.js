@@ -138,7 +138,6 @@ let UserResolver = class UserResolver {
                     password: hashedPassword,
                 }).returning('*')
                     .execute();
-                console.log(result);
                 user = result.raw[0];
             }
             catch (err) {
