@@ -31,7 +31,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield typeorm_1.createConnection({
         type: 'postgres',
         database: 'lireddit2',
-        username: 'anthonyzamarro',
+        username: 'azamaro',
         password: 'postgres',
         logging: true,
         synchronize: true,
