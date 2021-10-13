@@ -22,30 +22,14 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createPost: Post;
-  updatePost?: Maybe<Post>;
-  deletePost: Scalars['Boolean'];
   changePassword: UserResponse;
+  createPost: Post;
+  deletePost: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
-  register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
-};
-
-
-export type MutationCreatePostArgs = {
-  input: PostInput;
-};
-
-
-export type MutationUpdatePostArgs = {
-  title?: Maybe<Scalars['String']>;
-  id: Scalars['Float'];
-};
-
-
-export type MutationDeletePostArgs = {
-  id: Scalars['Float'];
+  register: UserResponse;
+  updatePost?: Maybe<Post>;
 };
 
 
@@ -55,13 +39,18 @@ export type MutationChangePasswordArgs = {
 };
 
 
-export type MutationForgotPasswordArgs = {
-  email: Scalars['String'];
+export type MutationCreatePostArgs = {
+  input: PostInput;
 };
 
 
-export type MutationRegisterArgs = {
-  options: UsernamePasswordInput;
+export type MutationDeletePostArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String'];
 };
 
 
@@ -70,28 +59,39 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationRegisterArgs = {
+  options: UsernamePasswordInput;
+};
+
+
+export type MutationUpdatePostArgs = {
+  id: Scalars['Float'];
+  title?: Maybe<Scalars['String']>;
+};
+
 export type Post = {
   __typename?: 'Post';
-  id: Scalars['Float'];
-  title: Scalars['String'];
-  text: Scalars['String'];
-  points: Scalars['String'];
-  creatorId: Scalars['Float'];
   createdAt: Scalars['String'];
+  creatorId: Scalars['Float'];
+  id: Scalars['Float'];
+  points: Scalars['String'];
+  text: Scalars['String'];
+  title: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
 export type PostInput = {
-  title: Scalars['String'];
   text: Scalars['String'];
+  title: Scalars['String'];
 };
 
 export type Query = {
   __typename?: 'Query';
   hello: Scalars['String'];
-  posts: Array<Post>;
-  post?: Maybe<Post>;
   me?: Maybe<User>;
+  post?: Maybe<Post>;
+  posts: Array<Post>;
 };
 
 
@@ -99,13 +99,19 @@ export type QueryPostArgs = {
   id: Scalars['Int'];
 };
 
+
+export type QueryPostsArgs = {
+  cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Int'];
+};
+
 export type User = {
   __typename?: 'User';
-  id: Scalars['Float'];
-  username: Scalars['String'];
-  email: Scalars['String'];
   createdAt: Scalars['String'];
+  email: Scalars['String'];
+  id: Scalars['Float'];
   updatedAt: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type UserResponse = {
@@ -116,8 +122,8 @@ export type UserResponse = {
 
 export type UsernamePasswordInput = {
   email: Scalars['String'];
-  username: Scalars['String'];
   password: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
@@ -173,10 +179,13 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string }> };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor?: Maybe<Scalars['String']>;
+}>;
 
 
-export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, createdAt: string, updatedAt: string, title: string }> };
+export type PostsQuery = { __typename?: 'Query', posts: Array<{ __typename?: 'Post', id: number, title: string, createdAt: string, updatedAt: string }> };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -281,12 +290,12 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };
 export const PostsDocument = gql`
-    query Posts {
-  posts {
+    query Posts($limit: Int!, $cursor: String) {
+  posts(limit: $limit, cursor: $cursor) {
     id
+    title
     createdAt
     updatedAt
-    title
   }
 }
     `;
